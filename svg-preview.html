@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG File Editor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/codemirror.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: start;
+      min-height: 100vh;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+
+    #editor-container {
+      width: 100%;
+      max-width: 800px;
+      height: 300px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    #svg-preview {
+      width: 100%;
+      max-width: 800px;
+      min-height: 300px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #007BFF;
+      color: white;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #svg-image {
+      width:auto;
+      max-width: 100%;
+      height: auto;
+    }
+    #bg-color-selector:has(option:checked[value="default"]) ~ #svg-preview {
+      background-color: white;
+    }
+    #bg-color-selector:has(option:checked[value="one"]) ~ #svg-preview {
+      background-color: hsl(0, 0%, 90%);
+    }
+    #bg-color-selector:has(option:checked[value="two"]) ~ #svg-preview {
+      background-color: hsl(0, 0%, 50%);
+    }
+    #bg-color-selector:has(option:checked[value="three"]) ~ #svg-preview {
+      background-color: hsl(0, 0%, 10%);
+    }
+    #preview-selector:has(option:checked[value="default"]) ~ #svg-preview img {
+      display:none;
+    }
+    #preview-selector:has(option:checked[value="one"]) ~ #svg-preview {
+      #raw-svg {
+        display: none;
+      }
+      img {
+        display: block;
+      }
+    }
+    #preview-selector:has(option:checked[value="two"]) ~ #svg-preview {
+      /*no need for rules both are shown*/
+    }
+  </style>
+</head>
+<body>
+
+<h1>SVG File Editor</h1>
+
+<div id="editor-container"></div>
+
+<button id="update-preview">Update Preview</button>
+<label for="bg-color-selector">Preview Background Color:</label>
+<select id="bg-color-selector">
+  <option value="default">White</option>
+  <option value="one">Light</option>
+  <option value="two">50% Grey</option>
+  <option value="three">Dark</option>
+</select>
+<label for="preview-selector">Preview Type:</label>
+<select id="preview-selector">
+  <option value="default">Raw Code</option>
+  <option value="one">IMG SRC</option>
+  <option value="two">Both</option>
+</select>
+
+<div id="svg-preview">
+  <div id="raw-svg">SVG output will appear here.</div>
+  <img id="svg-image" alt="img src SVG will appear here." />
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/mode/xml/xml.min.js"></script>
+<script>
+  const editorContainer = document.getElementById('editor-container');
+  const rawSvgContainer = document.getElementById('raw-svg');
+  const svgImage = document.getElementById('svg-image');
+  const updateButton = document.getElementById('update-preview');
+
+  // Initialize CodeMirror editor
+  const editor = CodeMirror(editorContainer, {
+    mode: 'xml',
+    lineNumbers: true,
+    theme: 'default',
+    tabSize: 2,
+    indentWithTabs: true,
+    extraKeys: { Tab: cm => cm.replaceSelection("\t") },
+    value: '<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">\n\t<circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />\n</svg>'
+  });
+
+  // Update preview function
+  function updatePreview() {
+    const svgCode = editor.getValue().trim();
+
+    if (!svgCode) {
+      rawSvgContainer.innerHTML = 'SVG output will appear here.';
+      svgImage.src = '';
+      return;
+    }
+
+    try {
+      // Display raw SVG code in the container
+      rawSvgContainer.innerHTML = svgCode;
+
+      // Create a blob and display the SVG as an image
+      const svgBlob = new Blob([svgCode], { type: 'image/svg+xml' });
+      svgImage.src = URL.createObjectURL(svgBlob);
+    } catch (e) {
+      rawSvgContainer.textContent = 'Error rendering SVG. Check your syntax.';
+      rawSvgContainer.style.color = 'red';
+      svgImage.src = '';
+    }
+  }
+
+  // Attach update button functionality
+  updateButton.addEventListener('click', updatePreview);
+</script>
+
+</body>
+</html>
