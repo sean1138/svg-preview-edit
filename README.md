@@ -2,7 +2,7 @@
 
 This editor provides a visual interface for working with SVG files directly in the browser. Use it to create, edit, and preview SVG content.  It's a half-baked idea i had, asked chat chattimmy about some things to get started but i really don't have any ideas on where to take this other than the bare-bones basic functionality it has.  I thought it could be used to troubleshoot some issues (which is why it has both `img` src and raw SVG preview options) i've seen in the past but i'm not 100% sure it will help until/unless i encounter them again.
 
-![screenshot ](screenshot.jpg)
+![editor screenshot](screenshot.jpg)
 
 ## Features
 
